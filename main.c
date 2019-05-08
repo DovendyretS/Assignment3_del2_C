@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-IplImage* src;
 IplImage* src_gray;
 FILE *fp;
 FILE *fpImage;
 int *intensenties;
 int buffer;
+CvCapture* capture;
 
 int main() {
+
 
     // command used for compiling .c file
     // gcc main.c -o main -lopencv_core -lopencv_highgui -lopencv_imgproc
@@ -19,7 +20,11 @@ int main() {
     intensenties = (int *)calloc(256, sizeof(int));
 
     //load image taken from RPi camera
-    src = cvLoadImage("/home/pi/billed1.jpg", CV_LOAD_IMAGE_COLOR);
+    capture = cvCaptureFromCAM(0);
+    IplImage* src = cvQueryFrame(capture);
+    cvSaveImage("billed.jpg",src,0);
+
+    src = cvLoadImage("billed.jpg", CV_LOAD_IMAGE_COLOR);
     if (src == NULL)
     {
         printf("Error no image found\n");
@@ -59,8 +64,7 @@ int main() {
     fprintf(fp, "%d\n", 256-zeroIntensity);
 
     //resolution calculated
-    fprintf(fp, "%d%s%d\n", src_gray->height,"x",src_gray->width);
-
+    fprintf(fp, "%d%s%d\n", src_gray->width,"x",src_gray->height);
     //number of pixels in each different intensity
     for (int j = 0; j < 256 ; ++j)
     {
